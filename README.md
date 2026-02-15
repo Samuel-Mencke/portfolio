@@ -352,7 +352,3 @@ Samuel Mencke - [contact@samuel-mencke.com](mailto:contact@samuel-mencke.com)
 Project Link: [https://github.com/Samuel-Mencke/portfolio](https://github.com/Samuel-Mencke/portfolio)
 
 ---
-
-<p align="center">
-  <b>Made with ❤️ by Samuel Mencke</b>
-</p>

@@ -635,11 +635,14 @@ const PortfolioApp = {
             }
             
             // Setup carousel
+            console.log('Images from API:', data.images);
             if (data.images && data.images.length > 0) {
+                console.log('Setting up carousel with', data.images.length, 'images');
                 this.setupCarousel(data.images);
                 this.setupCarouselNavigation();
                 carouselSection.classList.remove('no-images');
             } else {
+                console.log('No images found, hiding carousel section');
                 carouselSection.classList.add('no-images');
             }
             
@@ -682,28 +685,24 @@ const PortfolioApp = {
         
         if (!track || !dotsContainer) return;
         
-        // Create slides with loading state and error handling
-        track.innerHTML = images.map((img, index) => `
-            <div class="carousel-slide">
-                <div class="carousel-image-wrapper" style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
-                    <div class="image-loading" id="img-loading-${index}" style="position: absolute; display: flex; flex-direction: column; align-items: center; color: #fff;">
-                        <div class="loading-spinner" style="width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 1s linear infinite;"></div>
-                        <span style="margin-top: 10px; font-size: 14px;">Lade Bild...</span>
-                    </div>
+        // Create slides with proper error handling
+        track.innerHTML = images.map((img, index) => {
+            const safeAlt = (img.alt || 'Screenshot ' + (index + 1)).replace(/'/g, "\\'");
+            return `
+                <div class="carousel-slide">
                     <img src="${img.url}" 
-                         alt="${img.alt || `Screenshot ${index + 1}`}" 
+                         alt="${safeAlt}" 
                          loading="${index === 0 ? 'eager' : 'lazy'}"
-                         style="max-width: 100%; max-height: 360px; object-fit: contain; border-radius: 16px; opacity: 0; transition: opacity 0.3s ease;"
-                         onload="this.style.opacity='1'; document.getElementById('img-loading-${index}').style.display='none';"
-                         onerror="this.style.display='none'; document.getElementById('img-loading-${index}').innerHTML='<div style=\'font-size: 48px; margin-bottom: 10px;\'>🖼️</div><div>${img.alt || 'Screenshot ' + (index + 1)}</div><div style=\'font-size: 12px; opacity: 0.6; margin-top: 8px;\'>Bild nicht verfügbar</div>';">
+                         onload="this.classList.add('loaded')"
+                         onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\"color:#fff;text-align:center;padding:20px;\"><div style=\"font-size:40px;margin-bottom:10px;\">🖼️</div><div>${safeAlt}</div><div style=\"font-size:12px;opacity:0.6;margin-top:8px;\">Image not available</div></div>'">
                 </div>
-            </div>
-        `).join('');
+            `;
+        }).join('');
         
         // Create dots
-        dotsContainer.innerHTML = images.map((_, index) => `
-            <button class="carousel-dot ${index === 0 ? 'active' : ''}" data-index="${index}" aria-label="Go to slide ${index + 1}"></button>
-        `).join('');
+        dotsContainer.innerHTML = images.map((_, index) => 
+            `<button class="carousel-dot ${index === 0 ? 'active' : ''}" data-index="${index}" aria-label="Go to slide ${index + 1}"></button>`
+        ).join('');
         
         // Add dot click handlers
         dotsContainer.querySelectorAll('.carousel-dot').forEach(dot => {

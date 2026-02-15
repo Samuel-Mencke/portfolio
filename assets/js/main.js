@@ -682,10 +682,21 @@ const PortfolioApp = {
         
         if (!track || !dotsContainer) return;
         
-        // Create slides
+        // Create slides with loading state and error handling
         track.innerHTML = images.map((img, index) => `
             <div class="carousel-slide">
-                <img src="${img.url}" alt="${img.alt || `Screenshot ${index + 1}`}" loading="${index === 0 ? 'eager' : 'lazy'}">
+                <div class="carousel-image-wrapper" style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+                    <div class="image-loading" id="img-loading-${index}" style="position: absolute; display: flex; flex-direction: column; align-items: center; color: #fff;">
+                        <div class="loading-spinner" style="width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                        <span style="margin-top: 10px; font-size: 14px;">Lade Bild...</span>
+                    </div>
+                    <img src="${img.url}" 
+                         alt="${img.alt || `Screenshot ${index + 1}`}" 
+                         loading="${index === 0 ? 'eager' : 'lazy'}"
+                         style="max-width: 100%; max-height: 360px; object-fit: contain; border-radius: 16px; opacity: 0; transition: opacity 0.3s ease;"
+                         onload="this.style.opacity='1'; document.getElementById('img-loading-${index}').style.display='none';"
+                         onerror="this.style.display='none'; document.getElementById('img-loading-${index}').innerHTML='<div style=\'font-size: 48px; margin-bottom: 10px;\'>🖼️</div><div>${img.alt || 'Screenshot ' + (index + 1)}</div><div style=\'font-size: 12px; opacity: 0.6; margin-top: 8px;\'>Bild nicht verfügbar</div>';">
+                </div>
             </div>
         `).join('');
         

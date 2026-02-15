@@ -199,9 +199,57 @@ if ($readmeData && isset($readmeData['content'])) {
     }
 }
 
-// For private repos: ONLY show README images, no additional repo browsing
-// For public repos: Still only README images (no code browsing allowed)
-// This ensures we never display source code, only documentation
+// If no images found in README, look for images in repository
+if (empty($images)) {
+    // Fetch repository contents to find images
+    $repoContents = makeGitHubRequest("{$apiBase}/repos/{$owner}/{$repo}/contents", $token);
+    
+    if ($repoContents && is_array($repoContents)) {
+        $imageExtensions = ['png', 'jpg', 'jpeg', 'gif', 'webp'];
+        
+        foreach ($repoContents as $item) {
+            if ($item['type'] !== 'file') continue;
+            
+            $ext = strtolower(pathinfo($item['name'], PATHINFO_EXTENSION));
+            if (!in_array($ext, $imageExtensions)) continue;
+            
+            $url = $item['download_url'] ?? "https://raw.githubusercontent.com/{$owner}/{$repo}/main/{$item['name']}";
+            
+            if (shouldExcludeUrl($url, $excludePatterns, $excludeFilenamePatterns)) {
+                continue;
+            }
+            
+            addImage($images, $seenUrls, $url, $excludePatterns, $excludeFilenamePatterns, $item['name']);
+        }
+        
+        // Look for screenshots/ or images/ directories
+        $preferredDirs = ['screenshots', 'images', 'assets', 'img'];
+        foreach ($repoContents as $item) {
+            if ($item['type'] !== 'dir') continue;
+            
+            $dirName = strtolower($item['name']);
+            if (!in_array($dirName, $preferredDirs)) continue;
+            
+            $dirContents = makeGitHubRequest($item['url'], $token);
+            if (!$dirContents || !is_array($dirContents)) continue;
+            
+            foreach ($dirContents as $file) {
+                if ($file['type'] !== 'file') continue;
+                
+                $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+                if (!in_array($ext, $imageExtensions)) continue;
+                
+                $url = $file['download_url'] ?? $file['html_url'];
+                
+                if (shouldExcludeUrl($url, $excludePatterns, $excludeFilenamePatterns)) {
+                    continue;
+                }
+                
+                addImage($images, $seenUrls, $url, $excludePatterns, $excludeFilenamePatterns, $file['name']);
+            }
+        }
+    }
+}
 
 // Convert README to HTML
 $htmlContent = '';

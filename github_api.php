@@ -180,28 +180,32 @@ class GitHubAPIService {
     }
     
     /**
-     * Find if user has a public fork of a repository
+     * Cached user forks to avoid multiple API calls
+     */
+    private ?array $userForksCache = null;
+    
+    /**
+     * Find if user has a public fork of a repository (uses cache)
      */
     private function findUserFork(string $originalFullName): ?string {
-        // Search for user's forks
-        $userRepos = $this->makeRequest("{$this->apiUrl}/users/{$this->username}/repos?type=forks&per_page=100");
-        
-        if (!$userRepos) {
-            return null;
-        }
-        
-        foreach ($userRepos as $repo) {
-            if (($repo['fork'] ?? false) && isset($repo['parent'])) {
-                if ($repo['parent']['full_name'] === $originalFullName) {
-                    // Found the fork, return URL if public
-                    if (!($repo['private'] ?? true)) {
-                        return $repo['html_url'];
+        // Load forks once and cache
+        if ($this->userForksCache === null) {
+            $this->userForksCache = [];
+            $userRepos = $this->makeRequest("{$this->apiUrl}/users/{$this->username}/repos?type=forks&per_page=30");
+            
+            if ($userRepos) {
+                foreach ($userRepos as $repo) {
+                    if (($repo['fork'] ?? false) && isset($repo['parent'])) {
+                        $parentName = $repo['parent']['full_name'];
+                        if (!($repo['private'] ?? true)) {
+                            $this->userForksCache[$parentName] = $repo['html_url'];
+                        }
                     }
                 }
             }
         }
         
-        return null;
+        return $this->userForksCache[$originalFullName] ?? null;
     }
     
     /**

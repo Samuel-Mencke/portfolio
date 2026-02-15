@@ -685,23 +685,25 @@ const PortfolioApp = {
         
         if (!track || !dotsContainer) return;
         
-        // Create slides with proper error handling
-        track.innerHTML = images.map((img, index) => {
-            const safeAlt = (img.alt || 'Screenshot ' + (index + 1)).replace(/'/g, "\\'");
-            return `
-                <div class="carousel-slide">
-                    <img src="${img.url}" 
-                         alt="${safeAlt}" 
-                         loading="${index === 0 ? 'eager' : 'lazy'}"
-                         onload="this.classList.add('loaded')"
-                         onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\"color:#fff;text-align:center;padding:20px;\"><div style=\"font-size:40px;margin-bottom:10px;\">🖼️</div><div>${safeAlt}</div><div style=\"font-size:12px;opacity:0.6;margin-top:8px;\">Image not available</div></div>'">
-                </div>
-            `;
-        }).join('');
+        // Create slides
+        track.innerHTML = images.map((img, index) => `
+            <div class="carousel-slide" data-index="${index}">
+                <img src="${img.url}" alt="${img.alt || 'Screenshot ' + (index + 1)}" loading="${index === 0 ? 'eager' : 'lazy'}">
+            </div>
+        `).join('');
+        
+        // Add image error handlers after DOM insertion
+        track.querySelectorAll('.carousel-slide img').forEach((img, index) => {
+            img.addEventListener('error', () => {
+                const slide = img.closest('.carousel-slide');
+                const alt = images[index].alt || 'Screenshot ' + (index + 1);
+                slide.innerHTML = '<div class="carousel-error"><div class="carousel-error-icon">🖼️</div><div>' + alt + '</div><div class="carousel-error-text">Image not available</div></div>';
+            });
+        });
         
         // Create dots
         dotsContainer.innerHTML = images.map((_, index) => 
-            `<button class="carousel-dot ${index === 0 ? 'active' : ''}" data-index="${index}" aria-label="Go to slide ${index + 1}"></button>`
+            '<button class="carousel-dot ' + (index === 0 ? 'active' : '') + '" data-index="' + index + '" aria-label="Go to slide ' + (index + 1) + '"></button>'
         ).join('');
         
         // Add dot click handlers

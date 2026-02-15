@@ -57,6 +57,7 @@
                                     </span>
                                     <span id="projectModalTopics" class="project-topics"></span>
                                 </div>
+                                <div id="projectModalTechnologies" class="project-technologies"></div>
                             </div>
                             <div class="project-header-actions">
                                 <a id="projectModalForkLink" href="#" target="_blank" rel="noopener noreferrer" class="project-fork-btn hidden">

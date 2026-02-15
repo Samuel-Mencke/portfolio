@@ -520,11 +520,12 @@ const PortfolioApp = {
     /**
      * Open project modal for a repository
      */
-    openReadmeModal(owner, repo, repoUrl, userForkUrl = null) {
+    openReadmeModal(owner, repo, repoUrl, userForkUrl = null, languages = null) {
         if (!this.projectModal) return;
         
-        // Store fork URL
+        // Store fork URL and languages
         this.currentForkUrl = userForkUrl;
+        this.currentLanguages = languages ? JSON.parse(languages) : null;
         
         // Show modal
         this.projectModal.classList.add('active');

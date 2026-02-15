@@ -6,7 +6,7 @@
     <title><?= isset($pageTitle) ? htmlspecialchars($pageTitle) : 'Samuel Mencke - Portfolio' ?></title>
     
     <!-- Meta Tags -->
-    <meta name="description" content="<?= isset($pageDescription) ? htmlspecialchars($pageDescription) : 'Portfolio of Samuel Mencke, a 15-year-old developer from Germany' ?>">
+    <meta name="description" content="<?= isset($pageDescription) ? htmlspecialchars($pageDescription) : 'Portfolio of Samuel Mencke, a developer from Germany' ?>">
     <meta name="keywords" content="Samuel Mencke, developer, portfolio, PHP, JavaScript, Three.js, web development">
     <meta name="author" content="Samuel Mencke">
     
@@ -14,12 +14,12 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://samuel-mencke.com">
     <meta property="og:title" content="<?= isset($pageTitle) ? htmlspecialchars($pageTitle) : 'Samuel Mencke - Portfolio' ?>">
-    <meta property="og:description" content="<?= isset($pageDescription) ? htmlspecialchars($pageDescription) : 'Portfolio of Samuel Mencke, a 15-year-old developer from Germany' ?>">
-    
+    <meta property="og:description" content="<?= isset($pageDescription) ? htmlspecialchars($pageDescription) : 'Portfolio of Samuel Mencke, a developer from Germany' ?>">
+
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:title" content="<?= isset($pageTitle) ? htmlspecialchars($pageTitle) : 'Samuel Mencke - Portfolio' ?>">
-    <meta property="twitter:description" content="<?= isset($pageDescription) ? htmlspecialchars($pageDescription) : 'Portfolio of Samuel Mencke, a 15-year-old developer from Germany' ?>">
+    <meta property="twitter:description" content="<?= isset($pageDescription) ? htmlspecialchars($pageDescription) : 'Portfolio of Samuel Mencke, a developer from Germany' ?>">
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

@@ -136,11 +136,12 @@ class ProjectCards3D {
                 const fullName = card.dataset.fullname;
                 const repoUrl = card.dataset.repoUrl;
                 const userForkUrl = card.dataset.userForkUrl;
+                const languages = card.dataset.languages;
                 
                 if (fullName && repoUrl) {
                     const [owner, repo] = fullName.split('/');
                     if (owner && repo && window.PortfolioApp) {
-                        window.PortfolioApp.openReadmeModal(owner, repo, repoUrl, userForkUrl);
+                        window.PortfolioApp.openReadmeModal(owner, repo, repoUrl, userForkUrl, languages);
                     }
                 }
             });

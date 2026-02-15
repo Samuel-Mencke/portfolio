@@ -492,6 +492,18 @@ body {
     padding: 4px 10px;
     background: var(--hover-bg);
     border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.lang-more {
+    font-size: 0.7rem;
+    color: var(--secondary-text);
+    background: var(--card-bg);
+    padding: 2px 6px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
 }
 
 .project-card-links {

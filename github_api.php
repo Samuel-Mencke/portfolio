@@ -236,12 +236,16 @@ class GitHubAPIService {
             return null;
         }
         
+        // Fetch all languages for this repo
+        $languages = $this->fetchLanguages($repo['languages_url'] ?? null);
+        
         return [
             'id' => $repo['id'],
             'name' => $name,
             'full_name' => $fullName,
             'description' => $repo['description'] ?: 'No description available',
             'language' => $repo['language'] ?? 'Unknown',
+            'languages' => $languages,
             'stargazers_count' => $repo['stargazers_count'] ?? 0,
             'html_url' => $repo['html_url'],
             'homepage' => $repo['homepage'] ?? null,
@@ -327,12 +331,16 @@ class GitHubAPIService {
             return null;
         }
         
+        // Fetch all languages for this repo
+        $languages = $this->fetchLanguages($repo['languages_url'] ?? null);
+        
         return [
             'id' => $repo['id'],
             'name' => $name,
             'full_name' => $fullName,
             'description' => $repo['description'] ?: 'No description available',
             'language' => $repo['language'] ?? 'Unknown',
+            'languages' => $languages,
             'stargazers_count' => $repo['stargazers_count'] ?? 0,
             'html_url' => $repo['html_url'],
             'homepage' => $repo['homepage'] ?? null,
@@ -343,6 +351,25 @@ class GitHubAPIService {
             'is_fork_contribution' => false,
             'user_fork_url' => null
         ];
+    }
+    
+    /**
+     * Fetch all languages for a repository
+     */
+    private function fetchLanguages(?string $languagesUrl): array {
+        if (!$languagesUrl) {
+            return [];
+        }
+        
+        $languages = $this->makeRequest($languagesUrl);
+        
+        if (!$languages || !is_array($languages)) {
+            return [];
+        }
+        
+        // Return language names sorted by bytes (most used first)
+        arsort($languages);
+        return array_keys($languages);
     }
     
     /**

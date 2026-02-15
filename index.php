@@ -28,7 +28,12 @@ $contributedProjects = $githubProjects['contributed'] ?? [];
 // Collect all unique technologies/languages from all projects
 $allTechnologies = [];
 foreach (array_merge($ownedProjects, $contributedProjects) as $project) {
-    if (!empty($project['language']) && $project['language'] !== 'Unknown') {
+    // Add all languages, not just primary
+    if (!empty($project['languages'])) {
+        foreach ($project['languages'] as $lang) {
+            $allTechnologies[$lang] = true;
+        }
+    } elseif (!empty($project['language']) && $project['language'] !== 'Unknown') {
         $allTechnologies[$project['language']] = true;
     }
 }
@@ -67,18 +72,6 @@ include __DIR__ . '/partials/header.php';
         </p>
     </section>
 
-    <!-- Technologies Section -->
-    <?php if (!empty($allTechnologies)): ?>
-    <section id="technologies" class="section">
-        <h2 class="section-title">technologies</h2>
-        <div class="technologies-container">
-            <?php foreach ($allTechnologies as $tech): ?>
-                <span class="tech-badge"><?= htmlspecialchars($tech) ?></span>
-            <?php endforeach; ?>
-        </div>
-    </section>
-    <?php endif; ?>
-
     <!-- My Projects Section -->
     <section id="projects" class="section">
         <h2 class="section-title">my projects</h2>
@@ -103,7 +96,17 @@ include __DIR__ . '/partials/header.php';
                     </div>
                     <p class="project-card-description"><?= htmlspecialchars($project['description']) ?></p>
                     <div class="project-card-footer">
-                        <span class="project-card-language"><?= htmlspecialchars($project['language']) ?></span>
+                        <?php 
+                        $languages = $project['languages'] ?? [];
+                        $primaryLang = $languages[0] ?? $project['language'] ?? 'Unknown';
+                        $langCount = count($languages);
+                        ?>
+                        <span class="project-card-language">
+                            <?= htmlspecialchars($primaryLang) ?>
+                            <?php if ($langCount > 1): ?>
+                                <span class="lang-more">+<?= $langCount - 1 ?></span>
+                            <?php endif; ?>
+                        </span>
                         <div class="project-card-links">
                             <a href="<?= htmlspecialchars($project['html_url']) ?>" 
                                target="_blank" 
@@ -160,7 +163,17 @@ include __DIR__ . '/partials/header.php';
                     <p class="project-card-fullname"><?= htmlspecialchars($project['full_name']) ?></p>
                     <p class="project-card-description"><?= htmlspecialchars($project['description']) ?></p>
                     <div class="project-card-footer">
-                        <span class="project-card-language"><?= htmlspecialchars($project['language']) ?></span>
+                        <?php 
+                        $languages = $project['languages'] ?? [];
+                        $primaryLang = $languages[0] ?? $project['language'] ?? 'Unknown';
+                        $langCount = count($languages);
+                        ?>
+                        <span class="project-card-language">
+                            <?= htmlspecialchars($primaryLang) ?>
+                            <?php if ($langCount > 1): ?>
+                                <span class="lang-more">+<?= $langCount - 1 ?></span>
+                            <?php endif; ?>
+                        </span>
                         <div class="project-card-links">
                             <a href="<?= htmlspecialchars($project['html_url']) ?>" 
                                target="_blank" 

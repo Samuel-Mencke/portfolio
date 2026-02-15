@@ -1,0 +1,89 @@
+# ========================================
+# Environment & Security - NEVER COMMIT THESE!
+# ========================================
+.env
+.env.local
+.env.*.local
+.env.backup
+
+# ========================================
+# Legacy Config Files with Credentials (Migrated to .env)
+# ========================================
+config/config.json
+config/config.json.backup
+assets/sftp.json
+assets/sftp.json.backup
+
+# ========================================
+# Composer Dependencies
+# ========================================
+/vendor/
+composer.lock
+
+# ========================================
+# IDE & Editor Files
+# ========================================
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# ========================================
+# OS Generated Files
+# ========================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ========================================
+# Logs & Cache
+# ========================================
+*.log
+/logs/
+/cache/
+/tmp/
+/temp/
+*.cache
+
+# ========================================
+# User Uploads & Generated Content
+# ========================================
+/uploads/
+/public/uploads/
+/storage/
+*.sql
+*.sql.gz
+
+# ========================================
+# Build & Distribution
+# ========================================
+/dist/
+/build/
+/node_modules/
+/npm-debug.log
+/yarn-error.log
+
+# ========================================
+# Testing
+# ========================================
+/coverage/
+.phpunit.result.cache
+.phpunit.cache/
+
+# ========================================
+# Security
+# ========================================
+*.pem
+*.key
+*.crt
+*.csr
+.htpasswd

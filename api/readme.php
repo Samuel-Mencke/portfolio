@@ -173,35 +173,41 @@ function addImage(&$images, &$seenUrls, $url, $excludePatterns, $excludeFilename
     $images[] = ['url' => $url, 'alt' => $alt];
 }
 
+// Check if this is the portfolio repo (use local images only)
+$isPortfolioRepo = ($repo === 'portfolio');
+
 // Extract images ONLY from README (no code files, no repo browsing)
 if ($readmeData && isset($readmeData['content'])) {
     $readmeContent = base64_decode($readmeData['content']);
     
-    // Match markdown images ![alt](url)
-    preg_match_all('/!\[([^\]]*)\]\(([^)]+)\)/', $readmeContent, $mdImages, PREG_SET_ORDER);
-    foreach ($mdImages as $match) {
-        $url = $match[2];
-        // Convert relative GitHub URLs to absolute
-        if (strpos($url, 'http') !== 0) {
-            $url = "https://raw.githubusercontent.com/{$owner}/{$repo}/main/" . ltrim($url, './');
+    // Skip README image extraction for portfolio repo (we'll use local images instead)
+    if (!$isPortfolioRepo) {
+        // Match markdown images ![alt](url)
+        preg_match_all('/!\[([^\]]*)\]\(([^)]+)\)/', $readmeContent, $mdImages, PREG_SET_ORDER);
+        foreach ($mdImages as $match) {
+            $url = $match[2];
+            // Convert relative GitHub URLs to absolute
+            if (strpos($url, 'http') !== 0) {
+                $url = "https://raw.githubusercontent.com/{$owner}/{$repo}/main/" . ltrim($url, './');
+            }
+            addImage($images, $seenUrls, $url, $excludePatterns, $excludeFilenamePatterns, $match[1]);
         }
-        addImage($images, $seenUrls, $url, $excludePatterns, $excludeFilenamePatterns, $match[1]);
-    }
-    
-    // Match HTML images <img src="url" />
-    preg_match_all('/<img[^>]+src=["\']([^"\']+)["\'][^>]*>/i', $readmeContent, $htmlImages, PREG_SET_ORDER);
-    foreach ($htmlImages as $match) {
-        $url = $match[1];
-        if (strpos($url, 'http') !== 0) {
-            $url = "https://raw.githubusercontent.com/{$owner}/{$repo}/main/" . ltrim($url, '/');
+        
+        // Match HTML images <img src="url" />
+        preg_match_all('/<img[^>]+src=["\']([^"\']+)["\'][^>]*>/i', $readmeContent, $htmlImages, PREG_SET_ORDER);
+        foreach ($htmlImages as $match) {
+            $url = $match[1];
+            if (strpos($url, 'http') !== 0) {
+                $url = "https://raw.githubusercontent.com/{$owner}/{$repo}/main/" . ltrim($url, '/');
+            }
+            addImage($images, $seenUrls, $url, $excludePatterns, $excludeFilenamePatterns, '');
         }
-        addImage($images, $seenUrls, $url, $excludePatterns, $excludeFilenamePatterns, '');
     }
 }
 
 // For the portfolio repository itself, use local images
-$githubUsername = getenv('GITHUB_USERNAME') ?: 'Samuel-Mencke';
-if ($owner === $githubUsername && $repo === 'portfolio') {
+// Check by repo name 'portfolio' regardless of owner (works with any fork)
+if ($repo === 'portfolio') {
     // Use local images from /images folder
     $localImages = [
         ['name' => 'startpage.png', 'alt' => 'Start Page'],
@@ -214,8 +220,12 @@ if ($owner === $githubUsername && $repo === 'portfolio') {
     foreach ($localImages as $img) {
         $localPath = __DIR__ . '/../images/' . $img['name'];
         if (file_exists($localPath)) {
-            // Use relative path for local images
-            addImage($images, $seenUrls, 'images/' . $img['name'], $excludePatterns, $excludeFilenamePatterns, $img['alt']);
+            // Build absolute URL from current request
+            $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+            $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+            $baseUrl = $protocol . '://' . $host;
+            $imageUrl = $baseUrl . '/images/' . $img['name'];
+            addImage($images, $seenUrls, $imageUrl, $excludePatterns, $excludeFilenamePatterns, $img['alt']);
         }
     }
 } else {

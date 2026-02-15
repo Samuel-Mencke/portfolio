@@ -25,6 +25,16 @@ $githubProjects = $githubService->fetchRepositories();
 $ownedProjects = $githubProjects['owned'] ?? [];
 $contributedProjects = $githubProjects['contributed'] ?? [];
 
+// Collect all unique technologies/languages from all projects
+$allTechnologies = [];
+foreach (array_merge($ownedProjects, $contributedProjects) as $project) {
+    if (!empty($project['language']) && $project['language'] !== 'Unknown') {
+        $allTechnologies[$project['language']] = true;
+    }
+}
+$allTechnologies = array_keys($allTechnologies);
+sort($allTechnologies);
+
 // Include header partial
 include __DIR__ . '/partials/header.php';
 ?>
@@ -56,6 +66,18 @@ include __DIR__ . '/partials/header.php';
             If you're interested in similar things or want to exchange ideas, feel free to message me.
         </p>
     </section>
+
+    <!-- Technologies Section -->
+    <?php if (!empty($allTechnologies)): ?>
+    <section id="technologies" class="section">
+        <h2 class="section-title">technologies</h2>
+        <div class="technologies-container">
+            <?php foreach ($allTechnologies as $tech): ?>
+                <span class="tech-badge"><?= htmlspecialchars($tech) ?></span>
+            <?php endforeach; ?>
+        </div>
+    </section>
+    <?php endif; ?>
 
     <!-- My Projects Section -->
     <section id="projects" class="section">

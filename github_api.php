@@ -35,6 +35,17 @@ class GitHubAPIService {
         $owned = $this->fetchOwnedRepositories();
         $contributed = $this->fetchContributedRepositories();
         
+        // Get IDs of owned repos to filter out duplicates
+        $ownedIds = array_column($owned, 'id');
+        
+        // Filter contributed repos - remove any that are already in owned
+        $contributed = array_filter($contributed, function($repo) use ($ownedIds) {
+            return !in_array($repo['id'], $ownedIds);
+        });
+        
+        // Re-index array after filtering
+        $contributed = array_values($contributed);
+        
         // Sort both arrays by stars (descending)
         usort($owned, function($a, $b) {
             return $b['stargazers_count'] <=> $a['stargazers_count'];

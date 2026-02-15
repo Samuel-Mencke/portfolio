@@ -153,6 +153,17 @@ $repoDetails = makeGitHubRequest("{$apiBase}/repos/{$owner}/{$repo}", $token);
 // Check if repo is private
 $isPrivate = $repoDetails['private'] ?? false;
 
+// Fetch all languages for this repository
+$languages = [];
+if (isset($repoDetails['languages_url'])) {
+    $languagesData = makeGitHubRequest($repoDetails['languages_url'], $token);
+    if ($languagesData && is_array($languagesData)) {
+        // Sort by bytes (most used first)
+        arsort($languagesData);
+        $languages = array_keys($languagesData);
+    }
+}
+
 // Fetch README content
 $readmeData = makeGitHubRequest("{$apiBase}/repos/{$owner}/{$repo}/readme", $token);
 
@@ -296,6 +307,7 @@ $response = [
         'html_url' => $repoDetails['html_url'] ?? "https://github.com/{$owner}/{$repo}",
         'homepage' => $repoDetails['homepage'] ?? null,
         'language' => $repoDetails['language'] ?? 'Unknown',
+        'languages' => $languages,
         'stargazers_count' => $repoDetails['stargazers_count'] ?? 0,
         'forks_count' => $repoDetails['forks_count'] ?? 0,
         'created_at' => $repoDetails['created_at'] ?? null,

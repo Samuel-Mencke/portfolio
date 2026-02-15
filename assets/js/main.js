@@ -599,7 +599,6 @@ const PortfolioApp = {
         const contentEl = document.getElementById('projectReadmeContent');
         const titleEl = document.getElementById('projectModalTitle');
         const linkEl = document.getElementById('projectModalLink');
-        const languageEl = document.getElementById('projectModalLanguage');
         const starsEl = document.getElementById('projectModalStars');
         const topicsEl = document.getElementById('projectModalTopics');
         const carouselSection = document.getElementById('projectImageCarousel');
@@ -616,10 +615,19 @@ const PortfolioApp = {
             if (data.repo) {
                 if (titleEl) titleEl.textContent = data.repo.name;
                 if (linkEl) linkEl.href = data.repo.html_url;
-                if (languageEl) {
-                    const langText = languageEl.querySelector('.meta-text');
-                    if (langText) langText.textContent = data.repo.language;
+                
+                // Update languages - show all languages
+                const techContainer = document.getElementById('projectModalTechnologies');
+                if (techContainer) {
+                    const languages = data.repo.languages && data.repo.languages.length > 0 
+                        ? data.repo.languages 
+                        : [data.repo.language || 'Unknown'];
+                    
+                    techContainer.innerHTML = languages.map(lang => 
+                        `<span class="tech-badge">${lang}</span>`
+                    ).join('');
                 }
+                
                 if (starsEl) {
                     const starsText = starsEl.querySelector('.meta-text');
                     if (starsText) starsText.textContent = data.repo.stargazers_count;

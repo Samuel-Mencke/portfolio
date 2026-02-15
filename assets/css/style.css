@@ -1287,6 +1287,34 @@ textarea:focus-visible {
     border: 1px solid var(--border-color);
 }
 
+/* Project Technologies in Modal */
+.project-technologies {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.project-technologies .tech-badge {
+    display: inline-block;
+    padding: 6px 14px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    font-size: 0.85rem;
+    color: var(--primary-text);
+    font-family: 'JetBrains Mono', monospace;
+    transition: all var(--transition-fast);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.project-technologies .tech-badge:hover {
+    background: var(--accent-color);
+    color: var(--bg-color);
+    transform: translateY(-2px);
+}
+
 .project-github-btn {
     display: flex;
     align-items: center;

@@ -45,10 +45,6 @@
                             <div class="project-info-title">
                                 <h2 id="projectModalTitle">Project Name</h2>
                                 <div class="project-info-meta">
-                                    <span id="projectModalLanguage" class="project-meta-item">
-                                        <span class="meta-dot"></span>
-                                        <span class="meta-text">Language</span>
-                                    </span>
                                     <span id="projectModalStars" class="project-meta-item">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                                             <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>

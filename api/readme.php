@@ -199,53 +199,73 @@ if ($readmeData && isset($readmeData['content'])) {
     }
 }
 
-// If no images found in README, look for images in repository
-if (empty($images)) {
-    // Fetch repository contents to find images
-    $repoContents = makeGitHubRequest("{$apiBase}/repos/{$owner}/{$repo}/contents", $token);
+// For the portfolio repository itself, use local images
+$githubUsername = getenv('GITHUB_USERNAME') ?: 'Samuel-Mencke';
+if ($owner === $githubUsername && $repo === 'portfolio') {
+    // Use local images from /images folder
+    $localImages = [
+        ['name' => 'startpage.png', 'alt' => 'Start Page'],
+        ['name' => 'aboutme.png', 'alt' => 'About Me'],
+        ['name' => 'projektpage.png', 'alt' => 'Projects Page'],
+        ['name' => 'skillspage.png', 'alt' => 'Skills Page'],
+        ['name' => 'contact-mepage.png', 'alt' => 'Contact Page']
+    ];
     
-    if ($repoContents && is_array($repoContents)) {
-        $imageExtensions = ['png', 'jpg', 'jpeg', 'gif', 'webp'];
-        
-        foreach ($repoContents as $item) {
-            if ($item['type'] !== 'file') continue;
-            
-            $ext = strtolower(pathinfo($item['name'], PATHINFO_EXTENSION));
-            if (!in_array($ext, $imageExtensions)) continue;
-            
-            $url = $item['download_url'] ?? "https://raw.githubusercontent.com/{$owner}/{$repo}/main/{$item['name']}";
-            
-            if (shouldExcludeUrl($url, $excludePatterns, $excludeFilenamePatterns)) {
-                continue;
-            }
-            
-            addImage($images, $seenUrls, $url, $excludePatterns, $excludeFilenamePatterns, $item['name']);
+    foreach ($localImages as $img) {
+        $localPath = __DIR__ . '/../images/' . $img['name'];
+        if (file_exists($localPath)) {
+            // Use relative path for local images
+            addImage($images, $seenUrls, 'images/' . $img['name'], $excludePatterns, $excludeFilenamePatterns, $img['alt']);
         }
+    }
+} else {
+    // For other repos, look for images in repository (GitHub)
+    if (empty($images)) {
+        $repoContents = makeGitHubRequest("{$apiBase}/repos/{$owner}/{$repo}/contents", $token);
         
-        // Look for screenshots/ or images/ directories
-        $preferredDirs = ['screenshots', 'images', 'assets', 'img'];
-        foreach ($repoContents as $item) {
-            if ($item['type'] !== 'dir') continue;
+        if ($repoContents && is_array($repoContents)) {
+            $imageExtensions = ['png', 'jpg', 'jpeg', 'gif', 'webp'];
             
-            $dirName = strtolower($item['name']);
-            if (!in_array($dirName, $preferredDirs)) continue;
-            
-            $dirContents = makeGitHubRequest($item['url'], $token);
-            if (!$dirContents || !is_array($dirContents)) continue;
-            
-            foreach ($dirContents as $file) {
-                if ($file['type'] !== 'file') continue;
+            foreach ($repoContents as $item) {
+                if ($item['type'] !== 'file') continue;
                 
-                $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+                $ext = strtolower(pathinfo($item['name'], PATHINFO_EXTENSION));
                 if (!in_array($ext, $imageExtensions)) continue;
                 
-                $url = $file['download_url'] ?? $file['html_url'];
+                $url = $item['download_url'] ?? "https://raw.githubusercontent.com/{$owner}/{$repo}/main/{$item['name']}";
                 
                 if (shouldExcludeUrl($url, $excludePatterns, $excludeFilenamePatterns)) {
                     continue;
                 }
                 
-                addImage($images, $seenUrls, $url, $excludePatterns, $excludeFilenamePatterns, $file['name']);
+                addImage($images, $seenUrls, $url, $excludePatterns, $excludeFilenamePatterns, $item['name']);
+            }
+            
+            // Look for screenshots/ or images/ directories
+            $preferredDirs = ['screenshots', 'images', 'assets', 'img'];
+            foreach ($repoContents as $item) {
+                if ($item['type'] !== 'dir') continue;
+                
+                $dirName = strtolower($item['name']);
+                if (!in_array($dirName, $preferredDirs)) continue;
+                
+                $dirContents = makeGitHubRequest($item['url'], $token);
+                if (!$dirContents || !is_array($dirContents)) continue;
+                
+                foreach ($dirContents as $file) {
+                    if ($file['type'] !== 'file') continue;
+                    
+                    $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+                    if (!in_array($ext, $imageExtensions)) continue;
+                    
+                    $url = $file['download_url'] ?? $file['html_url'];
+                    
+                    if (shouldExcludeUrl($url, $excludePatterns, $excludeFilenamePatterns)) {
+                        continue;
+                    }
+                    
+                    addImage($images, $seenUrls, $url, $excludePatterns, $excludeFilenamePatterns, $file['name']);
+                }
             }
         }
     }

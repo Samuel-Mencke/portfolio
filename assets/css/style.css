@@ -1095,6 +1095,10 @@ textarea:focus-visible {
     margin-bottom: 10px;
 }
 
+.carousel-error-icon::before {
+    content: "📷";
+}
+
 .carousel-error-text {
     font-size: 12px;
     opacity: 0.6;

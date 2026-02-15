@@ -685,19 +685,21 @@ const PortfolioApp = {
         
         if (!track || !dotsContainer) return;
         
-        // Create slides
-        track.innerHTML = images.map((img, index) => `
-            <div class="carousel-slide" data-index="${index}">
-                <img src="${img.url}" alt="${img.alt || 'Screenshot ' + (index + 1)}" loading="${index === 0 ? 'eager' : 'lazy'}">
-            </div>
-        `).join('');
+        // Create slides with error handling
+        track.innerHTML = images.map((img, index) => {
+            const safeAlt = img.alt || 'Screenshot ' + (index + 1);
+            return '<div class="carousel-slide" data-index="' + index + '">' +
+                '<img src="' + img.url + '" alt="' + safeAlt + '" loading="' + (index === 0 ? 'eager' : 'lazy') + '">' +
+                '</div>';
+        }).join('');
         
         // Add image error handlers after DOM insertion
         track.querySelectorAll('.carousel-slide img').forEach((img, index) => {
-            img.addEventListener('error', () => {
-                const slide = img.closest('.carousel-slide');
-                const alt = images[index].alt || 'Screenshot ' + (index + 1);
-                slide.innerHTML = '<div class="carousel-error"><div class="carousel-error-icon">🖼️</div><div>' + alt + '</div><div class="carousel-error-text">Image not available</div></div>';
+            img.addEventListener('error', function() {
+                console.error('Failed to load image:', this.src);
+                const slide = this.closest('.carousel-slide');
+                const alt = images[index] && images[index].alt ? images[index].alt : 'Screenshot ' + (index + 1);
+                slide.innerHTML = '<div class="carousel-error"><div class="carousel-error-icon"></div><div>' + alt + '</div><div class="carousel-error-text">Bild nicht verfügbar</div></div>';
             });
         });
         

@@ -177,8 +177,7 @@ portfolio/
 │   ├── aboutme.png          # About section
 │   ├── projektpage.png      # Projects grid
 │   ├── skillspage.png       # Skills section
-│   ├── contact-mepage.png   # Contact form
-│   └── localhost_8000_.png  # Project modal
+│   └── contact-mepage.png   # Contact form
 ├── partials/             # PHP partials
 │   ├── header.php
 │   ├── footer.php

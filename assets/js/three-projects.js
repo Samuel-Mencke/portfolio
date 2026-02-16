@@ -110,6 +110,24 @@ class ProjectCards3D {
                 card.addEventListener('touchend', () => {
                     card.style.transform = 'scale(1) translateZ(0)';
                 });
+                
+                // Click handler for opening README modal on touch devices
+                card.addEventListener('click', (e) => {
+                    // Don't open modal if clicking on links
+                    if (e.target.closest('a')) return;
+                    
+                    const fullName = card.dataset.fullname;
+                    const repoUrl = card.dataset.repoUrl;
+                    const userForkUrl = card.dataset.userForkUrl;
+                    const languages = card.dataset.languages;
+                    
+                    if (fullName && repoUrl) {
+                        const [owner, repo] = fullName.split('/');
+                        if (owner && repo && window.PortfolioApp) {
+                            window.PortfolioApp.openReadmeModal(owner, repo, repoUrl, userForkUrl, languages);
+                        }
+                    }
+                });
             });
             return;
         }
